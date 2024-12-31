@@ -4,7 +4,7 @@ on:
   push:
     # run only against tags
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -23,13 +23,16 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+      - name: Extract version from tag
+        id: extract_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean
+          args: release --clean --set version=${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Bump formulae
